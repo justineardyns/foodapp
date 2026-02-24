@@ -83,7 +83,7 @@ DEFAULT_PANTRY = sorted(set([
     "paprika", "champignons", "spinazie", "broccoli", "bloemkool",
     "courgette", "aubergine", "wortel", "prei", "selder",
     "tomaat", "komkommer", "sla", "rucola",
-    "erwten", "boontjes", "maïs",
+    "erwten", "boontjes", "maïs", "appelmoes",
 
     # --- Herbs / spices ---
     "zout", "peper", "paprikapoeder", "chilivlokken", "cayenne",
