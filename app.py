@@ -849,7 +849,7 @@ with tabs[1]:
         with c1:
             start = st.date_input("Start", value=date.today())
         with c2:
-            takeaway_days = st.slider("Afhaal (dagen)", 0, 7, 1)
+            takeaway_days = st.slider("Afhaal (dagen)", 0, 7, 0)
     
         submit_week = st.form_submit_button("Genereer", type="primary", use_container_width=True)
     
