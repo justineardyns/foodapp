@@ -6,6 +6,7 @@ import random
 import sqlite3
 from collections import defaultdict
 from datetime import date, datetime, timedelta
+from pathlib import Path
 
 import streamlit as st
 
@@ -827,8 +828,12 @@ with tabs[0]:
 
                 # Foto helemaal onderaan
                 if img_path:
-                    st.divider()
-                    st.image(img_path, width=1200)
+                    p = Path(img_path)
+                    if p.exists():
+                        st.divider()
+                        st.image(str(p), use_container_width=True)
+                    else:
+                        st.caption(f"⚠️ Afbeelding niet gevonden: {p.name}")
 
 
 # -------------------- Tab 2: Week --------------------
