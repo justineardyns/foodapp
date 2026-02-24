@@ -28,19 +28,18 @@ TAG_LIBRARY = [
 ]
 
 APP_DIR = Path(__file__).parent
-ASSETS_DIR = APP_DIR / "main"
 
 TAG_IMAGE = {
-    "pasta": str(ASSETS_DIR / "pasta.jpg"),
-    "rijst": str(ASSETS_DIR / "rijst.jpg"),
-    "aardappelen": str(ASSETS_DIR / "aardappelen.jpg"),
-    "noedels": str(ASSETS_DIR / "noedels.jpg"),
-    "wrap": str(ASSETS_DIR / "wraps.jpg"),
-    "brood": str(ASSETS_DIR / "brood.jpg"),
-    "salade": str(ASSETS_DIR / "salade.jpg"),
-    "soep": str(ASSETS_DIR / "soep.jpg"),
-    "couscous": str(ASSETS_DIR / "couscous.jpg"),
-    "bulgur": str(ASSETS_DIR / "bulgur.jpg"),
+    "pasta": str(APP_DIR / "pasta.jpg"),
+    "rijst": str(APP_DIR / "rijst.jpg"),
+    "aardappelen": str(APP_DIR / "aardappelen.jpg"),
+    "noedels": str(APP_DIR / "noedels.jpg"),
+    "wrap": str(APP_DIR / "wraps.jpg"),
+    "brood": str(APP_DIR / "brood.jpg"),
+    "salade": str(APP_DIR / "salade.jpg"),
+    "soep": str(APP_DIR / "soep.jpg"),
+    "couscous": str(APP_DIR / "couscous.jpg"),
+    "bulgur": str(APP_DIR / "bulgur.jpg"),
 }
 
 TAG_KEY_TO_LABEL = {t["key"]: t["label"] for t in TAG_LIBRARY}
