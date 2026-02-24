@@ -14,9 +14,6 @@ import requests
 
 import os
 
-DATA_DIR = os.getenv("STREAMLIT_PERSISTENT_STORAGE_PATH", ".")
-DB_PATH = os.path.join(DATA_DIR, "meals.db")
-
 # ---------- Fixed tag set (click-only) ----------
 # key = wat we opslaan in DB, label = wat je ziet
 TAG_LIBRARY = [
