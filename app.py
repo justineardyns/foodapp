@@ -9,6 +9,8 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import streamlit as st
+import base64
+import requests
 
 import os
 
@@ -110,6 +112,88 @@ DEFAULT_PANTRY = sorted(set([
     "noten", "pijnboompitten", "sesamzaad",
 ]))
 
+# --- GitHub backup (gratis persistence) ---
+GITHUB_REPO = "justineardyns/foodapp"  
+GITHUB_BRANCH = "main"
+GITHUB_DB_PATH = "data/meals.db"  # waar je db in je repo komt
+
+def _gh_headers():
+    token = st.secrets.get("GITHUB_TOKEN", "")
+    if not token:
+        return None
+    return {
+        "Authorization": f"token {token}",
+        "Accept": "application/vnd.github+json",
+    }
+
+def github_download_db_if_exists(local_path: str):
+    """
+    Download meals.db uit GitHub (als die bestaat) en zet lokaal.
+    """
+    headers = _gh_headers()
+    if not headers:
+        return False
+
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{GITHUB_DB_PATH}"
+    r = requests.get(url, headers=headers, params={"ref": GITHUB_BRANCH}, timeout=20)
+
+    if r.status_code == 200:
+        data = r.json()
+        content_b64 = data.get("content", "")
+        if content_b64:
+            raw = base64.b64decode(content_b64)
+            os.makedirs(os.path.dirname(local_path), exist_ok=True)
+            with open(local_path, "wb") as f:
+                f.write(raw)
+            return True
+
+    return False
+
+def github_upload_db(local_path: str, commit_message="Update meals.db"):
+    """
+    Upload lokale meals.db naar GitHub (create/update).
+    """
+    headers = _gh_headers()
+    if not headers:
+        return False
+
+    if not os.path.exists(local_path):
+        return False
+
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{GITHUB_DB_PATH}"
+
+    # check of file bestaat (sha nodig om te updaten)
+    sha = None
+    r0 = requests.get(url, headers=headers, params={"ref": GITHUB_BRANCH}, timeout=20)
+    if r0.status_code == 200:
+        sha = r0.json().get("sha")
+
+    with open(local_path, "rb") as f:
+        content_b64 = base64.b64encode(f.read()).decode("utf-8")
+
+    payload = {
+        "message": commit_message,
+        "content": content_b64,
+        "branch": GITHUB_BRANCH,
+    }
+    if sha:
+        payload["sha"] = sha
+
+    r = requests.put(url, headers=headers, json=payload, timeout=30)
+    return r.status_code in (200, 201)
+
+def persist_db(conn=None, reason="autosave"):
+    """
+    Throttle: niet 10 commits per minuut.
+    """
+    now = datetime.now().timestamp()
+    last = st.session_state.get("_last_db_push_ts", 0.0)
+    if now - last < 2.0:  # max 1 push per 2 sec
+        return
+
+    ok = github_upload_db(DB_PATH, commit_message=f"Update meals.db ({reason})")
+    if ok:
+        st.session_state["_last_db_push_ts"] = now
 
 
 # -------------------- DB --------------------
@@ -194,9 +278,10 @@ def q(conn, sql, params=()):
     return cur.fetchall()
 
 
-def exec_(conn, sql, params=()):
+def exec_(conn, sql, params=(), persist_reason="write"):
     conn.execute(sql, params)
     conn.commit()
+    persist_db(reason=persist_reason)
 
 
 # -------------------- Pantry --------------------
@@ -716,6 +801,10 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# --- Restore DB from GitHub on cold start ---
+if "db_restored" not in st.session_state:
+    github_download_db_if_exists(DB_PATH)
+    st.session_state["db_restored"] = True
 conn = get_conn()
 init_db(conn)
 migrate_db(conn)
