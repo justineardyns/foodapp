@@ -13,6 +13,8 @@ import base64
 import requests
 
 import os
+DATA_DIR = os.getenv("STREAMLIT_PERSISTENT_STORAGE_PATH", ".")
+DB_PATH = os.path.join(DATA_DIR, "meals.db")
 
 # ---------- Fixed tag set (click-only) ----------
 # key = wat we opslaan in DB, label = wat je ziet
@@ -194,12 +196,18 @@ def persist_db(conn=None, reason="autosave"):
 
 
 # -------------------- DB --------------------
+
+# --- Restore DB from GitHub on cold start ---
+if "db_restored" not in st.session_state:
+    if not os.path.exists(DB_PATH):
+        github_download_db_if_exists(DB_PATH)
+    st.session_state["db_restored"] = True
+    
 def get_conn():
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     conn = sqlite3.connect(DB_PATH, check_same_thread=False)
     conn.execute("PRAGMA foreign_keys = ON;")
     return conn
-    
 
 
 def init_db(conn):
@@ -798,10 +806,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- Restore DB from GitHub on cold start ---
-if "db_restored" not in st.session_state:
-    github_download_db_if_exists(DB_PATH)
-    st.session_state["db_restored"] = True
 conn = get_conn()
 init_db(conn)
 migrate_db(conn)
