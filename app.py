@@ -26,17 +26,20 @@ TAG_LIBRARY = [
     {"key": "bulgur", "label": "🌾 Bulgur"},
 ]
 
+APP_DIR = Path(__file__).parent
+ASSETS_DIR = APP_DIR / "main"
+
 TAG_IMAGE = {
-    "pasta": "/Users/justineardyns/Downloads/pasta.jpg",
-    "rijst": "/Users/justineardyns/Downloads/rijst.jpg",
-    "aardappelen": "/Users/justineardyns/Downloads/aardappelen.jpg",
-    "noedels": "/Users/justineardyns/Downloads/noedels.jpg",
-    "wrap": "/Users/justineardyns/Downloads/wraps.jpg",
-    "brood": "/Users/justineardyns/Downloads/brood.jpg",
-    "salade": "/Users/justineardyns/Downloads/salade.jpg",
-    "soep": "/Users/justineardyns/Downloads/soep.jpg",
-    "couscous": "/Users/justineardyns/Downloads/couscous.jpg",
-    "bulgur": "/Users/justineardyns/Downloads/bulgur.jpg",
+    "pasta": str(ASSETS_DIR / "pasta.jpg"),
+    "rijst": str(ASSETS_DIR / "rijst.jpg"),
+    "aardappelen": str(ASSETS_DIR / "aardappelen.jpg"),
+    "noedels": str(ASSETS_DIR / "noedels.jpg"),
+    "wrap": str(ASSETS_DIR / "wraps.jpg"),
+    "brood": str(ASSETS_DIR / "brood.jpg"),
+    "salade": str(ASSETS_DIR / "salade.jpg"),
+    "soep": str(ASSETS_DIR / "soep.jpg"),
+    "couscous": str(ASSETS_DIR / "couscous.jpg"),
+    "bulgur": str(ASSETS_DIR / "bulgur.jpg"),
 }
 
 TAG_KEY_TO_LABEL = {t["key"]: t["label"] for t in TAG_LIBRARY}
